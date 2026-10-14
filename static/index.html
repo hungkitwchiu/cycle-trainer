@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CycleTrainer</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="brand-mark"></span>CycleTrainer</div>
+  <nav>
+    <a href="#ride" data-tab="ride">Ride</a>
+    <a href="#workouts" data-tab="workouts">Workouts</a>
+    <a href="#activities" data-tab="activities">Activities</a>
+    <a href="#settings" data-tab="settings">Settings</a>
+  </nav>
+  <div class="pills" id="pills" title="Sensors - click to manage"></div>
+</header>
+
+<main>
+<!-- ============================================================ RIDE -->
+<section id="tab-ride" class="tab">
+  <div class="ride-head">
+    <div>
+      <div class="eyebrow" id="ride-mode">Free ride</div>
+      <h1 id="ride-title">No workout loaded</h1>
+    </div>
+    <div class="row gap">
+      <button class="ghost" id="btn-pick">Choose workout</button>
+      <button class="ghost" id="btn-free">Free ride</button>
+    </div>
+  </div>
+
+  <div class="metrics">
+    <div class="metric big power"><label>Power</label><div class="val" id="m-power">--</div><small>W · 3s</small></div>
+    <div class="metric big target"><label>Target</label><div class="val" id="m-target">--</div><small id="m-target-sub">W</small></div>
+    <div class="metric big hr"><label>Heart rate</label><div class="val" id="m-hr">--</div><small>bpm</small></div>
+    <div class="metric big cad"><label>Cadence</label><div class="val" id="m-cad">--</div><small id="m-cad-sub">rpm</small></div>
+    <div class="metric big interval"><label>Interval</label><div class="val" id="m-int">--:--</div><small id="m-int-sub">remaining</small></div>
+  </div>
+
+  <div class="cue" id="cue"><span id="cue-text">Connect your trainer, pick a workout and start pedaling.</span><span id="cue-next"></span></div>
+
+  <div class="chart-wrap"><canvas id="ride-chart"></canvas></div>
+
+  <div class="subline">
+    <span>Elapsed <b id="m-elapsed">0:00</b></span>
+    <span>Remaining <b id="m-remaining">--</b></span>
+    <span>Distance <b id="m-dist">0.0</b> km</span>
+    <span>FTP <b id="m-ftp">--</b> W</span>
+    <span id="m-state" class="state">ready</span>
+  </div>
+
+  <div class="controls">
+    <button class="primary big-btn" id="btn-start">Start</button>
+    <div class="ctl-group" id="grp-intensity">
+      <label>Intensity</label>
+      <div class="stepper"><button data-int="-0.01">−</button><span id="v-intensity">100%</span><button data-int="0.01">+</button></div>
+    </div>
+    <div class="ctl-group" id="grp-watts">
+      <label>Target</label>
+      <div class="stepper"><button data-watts="-5">−</button><span id="v-watts">150 W</span><button data-watts="5">+</button></div>
+    </div>
+    <div class="ctl-group">
+      <label>Mode</label>
+      <div class="seg"><button id="btn-erg" class="on">ERG</button><button id="btn-res">Resistance</button></div>
+    </div>
+    <div class="ctl-group" id="grp-grade">
+      <label>Grade</label>
+      <div class="stepper"><button data-grade="-0.5">−</button><span id="v-grade">0.0%</span><button data-grade="0.5">+</button></div>
+    </div>
+    <button class="ghost" id="btn-skip" title="Skip to next interval">Skip ›</button>
+    <button class="ghost" id="btn-extend" title="Repeat 1 more minute of this interval">+1 min</button>
+    <span class="spacer"></span>
+    <button class="danger" id="btn-end">End ride</button>
+  </div>
+</section>
+
+<!-- ============================================================ WORKOUTS -->
+<section id="tab-workouts" class="tab">
+  <div class="split">
+    <aside class="lib">
+      <div class="lib-head">
+        <h2>Library</h2>
+        <div class="row gap">
+          <button class="ghost small" id="btn-new">New</button>
+          <label class="ghost small btn-like">Import<input type="file" id="file-import" accept=".zwo,.mrc,.erg,.fit,.json" hidden></label>
+        </div>
+      </div>
+      <input type="search" id="lib-filter" placeholder="Filter workouts…">
+      <div id="lib-list" class="lib-list"></div>
+      <p class="hint">Import .zwo, .mrc, .erg, .json, or a recorded ride (.fit) to turn it into a template.</p>
+    </aside>
+    <div class="editor">
+      <div class="editor-head">
+        <input id="ed-name" class="title-input" placeholder="Workout name">
+        <div class="row gap">
+          <button class="primary" id="ed-ride">Ride it</button>
+          <button class="ghost" id="ed-save">Save</button>
+          <select id="ed-export"><option value="">Export…</option><option value="zwo">.zwo (Zwift)</option><option value="mrc">.mrc</option><option value="json">.json</option></select>
+          <button class="ghost danger-text" id="ed-delete">Delete</button>
+        </div>
+      </div>
+      <textarea id="ed-desc" rows="2" placeholder="Description"></textarea>
+      <div class="ed-stats" id="ed-stats"></div>
+      <div class="chart-wrap small"><canvas id="ed-chart"></canvas></div>
+      <div class="quick">
+        <span>Add:</span>
+        <button class="chip" data-add="warmup">Warm-up ramp</button>
+        <button class="chip" data-add="steady">Steady</button>
+        <button class="chip" data-add="intervals">Intervals…</button>
+        <button class="chip" data-add="cooldown">Cool-down</button>
+        <button class="chip" data-add="free">Free ride</button>
+      </div>
+      <div class="intervals-form" id="iv-form" hidden>
+        Repeat <input type="number" id="iv-n" value="4" min="1"> ×
+        on <input id="iv-on" value="4:00"> at <input type="number" id="iv-onp" value="105">%
+        off <input id="iv-off" value="2:00"> at <input type="number" id="iv-offp" value="50">%
+        <button class="primary small" id="iv-add">Add</button>
+      </div>
+      <table class="segs">
+        <thead><tr><th></th><th>Duration</th><th>Start %FTP</th><th>End %FTP</th><th>Watts</th><th>Cadence</th><th>Cue text</th><th></th></tr></thead>
+        <tbody id="seg-body"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ ACTIVITIES -->
+<section id="tab-activities" class="tab">
+  <h2>Activities</h2>
+  <p class="hint">Rides are saved as .FIT files in <code id="data-dir"></code>.</p>
+  <div id="act-list" class="act-list"></div>
+</section>
+
+<!-- ============================================================ SETTINGS -->
+<section id="tab-settings" class="tab">
+  <div class="settings-grid">
+    <div class="card">
+      <h2>Rider</h2>
+      <div class="form">
+        <label>FTP (W)<input type="number" id="s-ftp" min="50" max="600"></label>
+        <label>Weight (kg)<input type="number" id="s-weight" step="0.1"></label>
+        <label class="check"><input type="checkbox" id="s-autopause"> Auto-pause when I stop pedaling</label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Sensors</h2>
+      <div id="dev-current"></div>
+      <div class="row gap">
+        <button class="primary" id="btn-scan">Scan for devices</button>
+        <label class="check"><input type="checkbox" id="s-sim"> Simulator (no hardware)</label>
+      </div>
+      <p class="hint">Wake the KICKR by spinning the pedals and wear the HR strap before scanning. Close the Wahoo, Zwift or TrainerRoad apps first; a trainer accepts one controller at a time.</p>
+      <div id="scan-results"></div>
+    </div>
+
+    <div class="card">
+      <h2>Garmin Connect</h2>
+      <div id="garmin-status" class="status-line"></div>
+      <div class="form" id="garmin-form">
+        <label>Email<input id="gc-email" autocomplete="username"></label>
+        <label>Password<input id="gc-pass" type="password" autocomplete="current-password"></label>
+        <button class="primary" id="gc-login">Sign in</button>
+      </div>
+      <div class="form" id="garmin-mfa" hidden>
+        <label>Verification code (from Garmin email / app)<input id="gc-code" inputmode="numeric"></label>
+        <button class="primary" id="gc-mfa">Verify</button>
+      </div>
+      <button class="ghost" id="gc-logout">Sign out</button>
+      <label class="check"><input type="checkbox" id="s-auto-garmin"> Upload rides automatically</label>
+      <p class="hint"><b>Strava:</b> with Garmin Connect linked to your Strava account, every ride uploaded here is forwarded to Strava automatically.</p>
+      <p class="hint">Garmin has no public upload API for individuals. This uses the community <code>garminconnect</code> library, which signs in the way the Garmin mobile app does. Your password is only sent to Garmin; the app keeps just the session token on this PC.</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<dialog id="dlg-end">
+  <h2>End ride</h2>
+  <div id="end-summary" class="end-summary"></div>
+  <label class="block">Name<input id="end-name"></label>
+  <div class="row gap end-actions">
+    <button class="primary" id="end-save">Save ride</button>
+    <button class="ghost" id="end-resume">Keep riding</button>
+    <button class="danger-text ghost" id="end-discard">Discard</button>
+  </div>
+</dialog>
+
+<div id="toast" class="toast" hidden></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

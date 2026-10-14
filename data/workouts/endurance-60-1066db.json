@@ -1,0 +1,32 @@
+{
+  "id": "endurance-60-1066db",
+  "name": "Endurance 60",
+  "description": "One hour of steady Zone 2 endurance riding.",
+  "source": "imported from Endurance 60.mrc",
+  "segments": [
+    {
+      "duration": 480,
+      "start": 0.45,
+      "end": 0.65,
+      "cadence": null,
+      "text": "",
+      "free": false
+    },
+    {
+      "duration": 2640,
+      "start": 0.68,
+      "end": 0.68,
+      "cadence": null,
+      "text": "",
+      "free": false
+    },
+    {
+      "duration": 480,
+      "start": 0.6,
+      "end": 0.45,
+      "cadence": null,
+      "text": "",
+      "free": false
+    }
+  ]
+}

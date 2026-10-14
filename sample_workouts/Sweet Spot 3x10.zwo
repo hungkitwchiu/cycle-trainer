@@ -1,0 +1,15 @@
+<workout_file>
+  <author>CycleTrainer</author>
+  <name>Sweet Spot 3x10</name>
+  <description>Three 10-minute sweet spot intervals at 88-92% FTP with 5 minutes of recovery.</description>
+  <sportType>bike</sportType>
+  <workout>
+    <Warmup Duration="600" PowerLow="0.45" PowerHigh="0.70"><textevent timeoffset="0" message="Easy spin to warm up"/></Warmup>
+    <SteadyState Duration="600" Power="0.88" Cadence="90"><textevent timeoffset="0" message="Sweet spot #1 - settle in"/></SteadyState>
+    <SteadyState Duration="300" Power="0.50"><textevent timeoffset="0" message="Recover"/></SteadyState>
+    <SteadyState Duration="600" Power="0.90" Cadence="90"><textevent timeoffset="0" message="Sweet spot #2"/></SteadyState>
+    <SteadyState Duration="300" Power="0.50"/>
+    <SteadyState Duration="600" Power="0.92" Cadence="90"><textevent timeoffset="0" message="Last one"/></SteadyState>
+    <Cooldown Duration="480" PowerLow="0.60" PowerHigh="0.40"><textevent timeoffset="0" message="Cool down"/></Cooldown>
+  </workout>
+</workout_file>

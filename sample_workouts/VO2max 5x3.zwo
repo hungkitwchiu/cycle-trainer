@@ -1,0 +1,13 @@
+<workout_file>
+  <author>CycleTrainer</author>
+  <name>VO2max 5x3</name>
+  <description>Five 3-minute efforts at 115% FTP with 3 minutes easy between.</description>
+  <sportType>bike</sportType>
+  <workout>
+    <Warmup Duration="720" PowerLow="0.45" PowerHigh="0.75"/>
+    <SteadyState Duration="60" Power="1.0"><textevent timeoffset="0" message="Opener"/></SteadyState>
+    <SteadyState Duration="180" Power="0.50"/>
+    <IntervalsT Repeat="5" OnDuration="180" OffDuration="180" OnPower="1.15" OffPower="0.50" Cadence="100" CadenceResting="85"><textevent timeoffset="0" message="Interval 1/5 - high cadence"/></IntervalsT>
+    <Cooldown Duration="600" PowerLow="0.55" PowerHigh="0.40"/>
+  </workout>
+</workout_file>
